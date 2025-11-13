@@ -2,12 +2,14 @@
 #include<string>
 #include"University.h"
 #include "Scheduler.h"
+#include "GroupManager.h"
 using namespace std;
 
 int main() 
 {
     University uni;
     Scheduler scheduler;
+    GroupManager groupManager;
     int choice;
     do 
     {
@@ -22,6 +24,10 @@ int main()
         cout << "8) List Rooms\n";
         cout << "9) Add course and prerequisite (Scheduler)\n";
         cout << "10) Generate course schedule\n";
+        cout << "11) Create a group\n";
+        cout << "12) Add student to a group\n";
+        cout << "13) Assign faculty to a group\n";
+        cout << "14) List groups\n";
         cout << "0) Exit\n";
         cout << "Choice: ";
         cin >> choice;
@@ -156,6 +162,58 @@ int main()
             scheduler.printSchedule(schedule);
             break;
         }
+        case 11:
+        {
+            int gid;
+            cout << "Enter group ID: ";
+            cin >> gid;
+            groupManager.createGroup(gid);
+            break;
+		}
+        case 12:
+        {
+            int gid;
+            string sid;
+            cout << "Enter group ID: ";
+            cin >> gid;
+            cout << "Enter student ID to add: ";
+            cin >> sid;
+
+            if (!uni.hasStudent(sid)) {
+                cout << "Student with ID " << sid << " does not exist in the university\n";
+                break;
+            }
+
+            groupManager.addStudentToGroup(gid, sid);
+        }
+        break;
+
+        case 13:
+        {
+            int gid;
+            string fid;
+            cout << "Enter group ID: ";
+            cin >> gid;
+            cout << "Enter faculty ID to assign: ";
+            cin >> fid;
+
+            if (!uni.hasFaculty(fid)) {
+                cout << "Faculty with ID " << fid << " does not exist in the university.\n";
+                break;
+            }
+
+            groupManager.assignFacultyToGroup(gid, fid);
+        }
+        break;
+
+
+        case 14:
+        {
+            groupManager.listGroups();
+            break;
+        }
+
+
 
 
         case 0:

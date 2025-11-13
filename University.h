@@ -34,5 +34,10 @@ public:
 	//Room Management
     void addRoom(const Room& r);
     void listRooms() const;
+
+	//Existence Checks
+    bool hasStudent(const string& id) const;
+    bool hasFaculty(const string& id) const;
+
 };
 #endif

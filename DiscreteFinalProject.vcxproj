@@ -121,6 +121,7 @@
   <ItemGroup>
     <ClCompile Include="Course.cpp" />
     <ClCompile Include="Faculty.cpp" />
+    <ClCompile Include="GroupManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Scheduler.cpp" />
@@ -130,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="Course.h" />
     <ClInclude Include="Faculty.h" />
+    <ClInclude Include="GroupManager.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Student.h" />

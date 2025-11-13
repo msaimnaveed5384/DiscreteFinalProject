@@ -103,3 +103,27 @@ void University::listRooms() const
             << "\nType: " << r.getType()<<endl;
     }
 }
+//existence checks
+bool University::hasStudent(const string& id) const 
+{
+    for (const Student& s : students) 
+    {
+        if (s.getId() == id) 
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool University::hasFaculty(const string& id) const 
+{
+    for (const Faculty& f : faculty)
+    {
+        if (f.getFacultyID() == id)
+        {
+            return true;
+        }
+    }
+    return false;
+}
