@@ -145,3 +145,58 @@ void GroupManager::listGroups() const
         cout << endl;
     }
 }
+
+
+// Generate all combinations of students of a given size
+void GroupManager::generateStudentCombinations(const vector<string>& studentIds,int groupSize) const 
+{
+    if (studentIds.empty()) 
+    {
+        cout << "No students available to form groups\n";
+        return;
+    }
+
+    if (groupSize <= 0 || groupSize > (int)studentIds.size()) 
+    {
+        cout << "Invalid group size. It must be between 1 and " << studentIds.size() << ".\n";
+        return;
+    }
+
+    vector<string> current;
+    int count = 0;
+
+    cout << "All possible groups of size " << groupSize << ":\n";
+    generateCombUtil(studentIds, groupSize, 0, current, count);
+
+    cout << "Total number of possible groups C("
+        << studentIds.size() << ", " << groupSize << ") = "
+        << count << "\n";
+}
+
+void GroupManager::generateCombUtil(const vector<string>& ids,int groupSize,int start,vector<string>& current,int& count) const {
+    // If we formed a full group, print it
+    if ((int)current.size() == groupSize) 
+    {
+        cout << "{ ";
+        for (const string& id : current)
+        {
+            cout << id << " ";
+        }
+        cout << "}"<<endl;
+        count++;
+        return;
+    }
+
+    // If remaining elements are not enough to complete the group, stop
+    if (start >= (int)ids.size()) 
+    {
+        return;
+    }
+
+    for (int i = start; i < (int)ids.size(); i++) 
+    {
+        current.push_back(ids[i]);                        // choose this student
+        generateCombUtil(ids, groupSize, i + 1, current, count); // recurse
+        current.pop_back();                              // backtrack
+    }
+}

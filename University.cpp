@@ -127,3 +127,14 @@ bool University::hasFaculty(const string& id) const
     }
     return false;
 }
+
+vector<string> University::getAllStudentIDs() const 
+{
+    vector<string> ids;
+    for (const Student& s : students) 
+    {
+        ids.push_back(s.getId());
+    }
+    return ids;
+}
+

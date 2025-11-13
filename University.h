@@ -39,5 +39,8 @@ public:
     bool hasStudent(const string& id) const;
     bool hasFaculty(const string& id) const;
 
+    vector<string> getAllStudentIDs() const;
+
+
 };
 #endif

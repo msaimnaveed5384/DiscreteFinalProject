@@ -9,7 +9,7 @@ class Group
 private:
     int groupId;
     vector<string> studentIds; // IDs of students in this group
-    string facultyId;          // ID of assigned faculty advisor
+    string facultyId;          // ID of assigned faculty 
 
 public:
     Group(int id = 0);
@@ -29,6 +29,7 @@ private:
 
     Group* findGroup(int groupId);
     const Group* findGroup(int groupId) const;
+    void generateCombUtil(const vector<string>& ids,int groupSize,int start,vector<string>& current,int& count) const;
 
 public:
     GroupManager();
@@ -37,5 +38,9 @@ public:
     void addStudentToGroup(int groupId, const string& studentId);
     void assignFacultyToGroup(int groupId, const string& facultyId);
     void listGroups() const;
+
+	// Generate all combinations of students of a given size
+    void generateStudentCombinations(const vector<string>& studentIds,int groupSize) const;
+
 };
 #endif

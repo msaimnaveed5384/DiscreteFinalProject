@@ -28,6 +28,8 @@ int main()
         cout << "12) Add student to a group\n";
         cout << "13) Assign faculty to a group\n";
         cout << "14) List groups\n";
+        cout << "15. Generate all student groups of size k (combinations)\n";
+
         cout << "0) Exit\n";
         cout << "Choice: ";
         cin >> choice;
@@ -212,6 +214,16 @@ int main()
             groupManager.listGroups();
             break;
         }
+        case 15:
+        {
+            int k;
+            cout << "Enter group size k: ";
+            cin >> k;
+
+            vector<string> ids = uni.getAllStudentIDs();
+            groupManager.generateStudentCombinations(ids, k);
+        }
+        break;
 
 
 
