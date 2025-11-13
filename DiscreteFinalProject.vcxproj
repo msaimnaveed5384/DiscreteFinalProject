@@ -123,6 +123,7 @@
     <ClCompile Include="Faculty.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="Student.cpp" />
     <ClCompile Include="University.cpp" />
   </ItemGroup>
@@ -130,6 +131,7 @@
     <ClInclude Include="Course.h" />
     <ClInclude Include="Faculty.h" />
     <ClInclude Include="Room.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="Student.h" />
     <ClInclude Include="University.h" />
   </ItemGroup>

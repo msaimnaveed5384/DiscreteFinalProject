@@ -1,11 +1,13 @@
 #include<iostream>
 #include<string>
 #include"University.h"
+#include "Scheduler.h"
 using namespace std;
 
 int main() 
 {
     University uni;
+    Scheduler scheduler;
     int choice;
     do 
     {
@@ -18,6 +20,8 @@ int main()
         cout << "6) List Faculty\n";
         cout << "7) Add Room\n";
         cout << "8) List Rooms\n";
+        cout << "9) Add course and prerequisite (Scheduler)\n";
+        cout << "10) Generate course schedule\n";
         cout << "0) Exit\n";
         cout << "Choice: ";
         cin >> choice;
@@ -129,6 +133,31 @@ int main()
             uni.listRooms();
             break;
         }
+        case 9:
+        {
+            string courseCode, prereqCode;
+
+            cout << "Enter course code: ";
+            cin >> courseCode;
+
+            cout << "Enter prerequisite course code: ";
+            cin >> prereqCode;
+
+            scheduler.addCourse(courseCode);
+            scheduler.addCourse(prereqCode);
+            scheduler.addPrerequisite(courseCode, prereqCode);
+
+            cout << "Prerequisite added successfully.\n";
+            break;
+        }
+        case 10:
+        {
+            vector<string> schedule = scheduler.generateSchedule();
+            scheduler.printSchedule(schedule);
+            break;
+        }
+
+
         case 0:
             cout << "Exiting...\n";
             break;
