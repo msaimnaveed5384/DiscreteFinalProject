@@ -19,5 +19,7 @@ public:
     bool canTakeCourse(const vector<string>& completed,const string& course) const;
     vector<string> generateSchedule() const;
     void printSchedule(const vector<string>& schedule) const;
+    map<string, vector<string>> getPrerequisiteMap() const;
+
 };
 #endif

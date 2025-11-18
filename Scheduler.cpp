@@ -170,3 +170,8 @@ void Scheduler::printSchedule(const vector<string>& schedule) const
         cout << c << "\n";
     }
 }
+
+map<string, vector<string>> Scheduler::getPrerequisiteMap() const 
+{
+    return prerequisites;
+}

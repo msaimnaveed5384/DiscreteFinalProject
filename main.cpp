@@ -1,8 +1,10 @@
 #include<iostream>
 #include<string>
 #include"University.h"
-#include "Scheduler.h"
-#include "GroupManager.h"
+#include"Scheduler.h"
+#include"GroupManager.h"
+#include"PrerequisiteChecker.h"
+
 using namespace std;
 
 int main() 
@@ -13,7 +15,7 @@ int main()
     int choice;
     do 
     {
-        cout <<endl<<"===== UNIVERSITY MANAGEMENT MENU =====\n";
+        cout <<"\n===== UNIVERSITY MANAGEMENT MENU =====\n";
         cout << "1) Add Student\n";
         cout << "2) List Students\n";
         cout << "3) Add Course\n";
@@ -28,7 +30,8 @@ int main()
         cout << "12) Add student to a group\n";
         cout << "13) Assign faculty to a group\n";
         cout << "14) List groups\n";
-        cout << "15. Generate all student groups of size k (combinations)\n";
+        cout << "15) Generate all student groups of size k (combinations)\n";
+        cout << "16) Verify prerequisite chain using induction\n";
 
         cout << "0) Exit\n";
         cout << "Choice: ";
@@ -79,9 +82,13 @@ int main()
             Course c(code, title, ch);
             uni.addCourse(c);
 
+            // Keep schedulers course list in sync with university
+            scheduler.addCourse(code);
+
             cout << "Course added successfully\n";
             break;
         }
+
 
         case 4:
         {
@@ -151,13 +158,13 @@ int main()
             cout << "Enter prerequisite course code: ";
             cin >> prereqCode;
 
-            scheduler.addCourse(courseCode);
-            scheduler.addCourse(prereqCode);
+            //We assume both courses we already added via option 3
             scheduler.addPrerequisite(courseCode, prereqCode);
 
             cout << "Prerequisite added successfully.\n";
             break;
         }
+
         case 10:
         {
             vector<string> schedule = scheduler.generateSchedule();
@@ -222,11 +229,29 @@ int main()
 
             vector<string> ids = uni.getAllStudentIDs();
             groupManager.generateStudentCombinations(ids, k);
+            break;
         }
-        break;
 
+        case 16:
+        {
+            string baseCourse, targetCourse;
+            cout << "Enter base course code (e.g., IntroCS): ";
+            cin >> baseCourse;
+            cout << "Enter target (advanced) course code (e.g., AdvCS): ";
+            cin >> targetCourse;
 
+            map<string, vector<string>> prereqMap = scheduler.getPrerequisiteMap();
+            if (prereqMap.empty()) 
+            {
+                cout << "No prerequisite data available. "
+                    << "First add course prerequisites using option 9.\n";
+                break;
+            }
 
+            PrerequisiteChecker checker(prereqMap);
+            checker.proveByInduction(baseCourse, targetCourse);
+            break;
+        }
 
         case 0:
             cout << "Exiting...\n";
