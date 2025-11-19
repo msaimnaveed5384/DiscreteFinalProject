@@ -126,6 +126,7 @@
     <ClCompile Include="PrerequisiteChecker.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Scheduler.cpp" />
+    <ClCompile Include="SetOperations.cpp" />
     <ClCompile Include="Student.cpp" />
     <ClCompile Include="University.cpp" />
   </ItemGroup>
@@ -136,6 +137,7 @@
     <ClInclude Include="PrerequisiteChecker.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Scheduler.h" />
+    <ClInclude Include="SetOperations.h" />
     <ClInclude Include="Student.h" />
     <ClInclude Include="University.h" />
   </ItemGroup>

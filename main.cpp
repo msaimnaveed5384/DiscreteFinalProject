@@ -4,7 +4,7 @@
 #include"Scheduler.h"
 #include"GroupManager.h"
 #include"PrerequisiteChecker.h"
-
+#include"SetOperations.h"
 using namespace std;
 
 int main() 
@@ -32,6 +32,10 @@ int main()
         cout << "14) List groups\n";
         cout << "15) Generate all student groups of size k (combinations)\n";
         cout << "16) Verify prerequisite chain using induction\n";
+        cout << "17) Enroll a student in a course\n";
+        cout << "18) Analyze students across two courses (set operations)\n";
+        cout << "19) Generate all possible student groups (power set) for a course\n";
+
 
         cout << "0) Exit\n";
         cout << "Choice: ";
@@ -250,6 +254,103 @@ int main()
 
             PrerequisiteChecker checker(prereqMap);
             checker.proveByInduction(baseCourse, targetCourse);
+            break;
+        }
+        case 17:
+        {
+            string studentId, courseCode;
+
+            cout << "Enter student ID: ";
+            cin >> studentId;
+
+            cout << "Enter course code: ";
+            cin >> courseCode;
+
+            uni.enrollStudentInCourse(studentId, courseCode);
+            break;
+        }
+
+        case 18:
+        {
+            string courseA, courseB;
+
+            cout << "Enter first course code (e.g. CS101): ";
+            cin >> courseA;
+
+            cout << "Enter second course code (e.g. MATH101): ";
+            cin >> courseB;
+
+            // Get the enrolled student IDs for each course from University
+            vector<string> studentsA = uni.getStudentsInCourse(courseA);
+            vector<string> studentsB = uni.getStudentsInCourse(courseB);
+
+            cout << "\nStudents in " << courseA << ":\n";
+            SetOperations::printSet(studentsA, "S(" + courseA + ")");
+
+            cout << "Students in " << courseB << ":\n";
+            SetOperations::printSet(studentsB, "S(" + courseB + ")");
+
+            // Now apply proper set operations
+            vector<string> both = SetOperations::setIntersection(studentsA, studentsB);
+            vector<string> either = SetOperations::setUnion(studentsA, studentsB);
+            vector<string> onlyA = SetOperations::setDifference(studentsA, studentsB);
+            vector<string> onlyB = SetOperations::setDifference(studentsB, studentsA);
+
+            cout << "\nSet analysis:\n";
+            SetOperations::printSet(both, "Students in both " + courseA + " and " + courseB);
+            SetOperations::printSet(either, "Students in at least one of the two courses");
+            SetOperations::printSet(onlyA, "Students only in " + courseA);
+            SetOperations::printSet(onlyB, "Students only in " + courseB);
+
+            // Dry run mapping: "Find students enrolled in both CS101 and Math101"
+            cout << "\nDry run example completed using real data.\n\n";
+
+            break;
+        }
+
+        case 19:
+        {
+            string courseCode;
+            cout << "Enter course code to generate all possible student groups: ";
+            cin >> courseCode;
+
+            // Get enrolled students for this course
+            vector<string> students = uni.getStudentsInCourse(courseCode);
+
+            if (students.empty()) {
+                cout << "No students enrolled in course " << courseCode << ".\n\n";
+                break;
+            }
+
+            cout << "\nStudents enrolled in " << courseCode << ":\n";
+            SetOperations::printSet(students, "S(" + courseCode + ")");
+
+            // To avoid crazy output, you can gently warn if too many students
+            if (students.size() > 15)
+            {
+                cout << "\nWarning: More than 15 students. "
+                    << "Power set size 2^n will be very large.\n\n";
+                break;
+            }
+
+            vector<vector<string>> allGroups = SetOperations::powerSet(students);
+
+            cout << "\nAll possible student groups for course " << courseCode << " (power set):\n";
+            for (int i = 0; i < allGroups.size();i++) 
+            {
+                cout << "Group " << i << ": { ";
+                for (int j = 0; j < allGroups[i].size(); j++)
+                {
+                    cout << allGroups[i][j];
+                    if (j + 1 < allGroups[i].size()) 
+                    {
+                        cout << ", ";
+                    }
+                }
+                cout << " }\n";
+            }
+
+            cout << "\nTotal number of possible groups (2^n) = " << allGroups.size() << "\n\n";
             break;
         }
 

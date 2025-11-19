@@ -56,6 +56,26 @@ void University::listCourses() const
              << "\nCredit Hours: " << c.getCreditHours()<< endl;
     }
 }
+void University::enrollStudentInCourse(const string& studentId, const string& courseCode) 
+{
+    // Optional: later you can check if studentId and courseCode actually exist.
+    // For now we just record the relationship.
+
+    courseEnrollments[courseCode].push_back(studentId);
+
+    cout << "Student " << studentId << " enrolled in course " << courseCode << " successfully.\n";
+}
+
+vector<string> University::getStudentsInCourse(const string& courseCode) const
+{
+    auto it = courseEnrollments.find(courseCode);
+    if (it != courseEnrollments.end())
+    {
+        return it->second;
+    }
+    // no enrollment yet
+    return vector<string>();
+}
 
 //faculty management
 void University::addFaculty(const Faculty& f)

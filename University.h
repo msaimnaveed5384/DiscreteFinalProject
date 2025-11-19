@@ -1,6 +1,7 @@
 #ifndef UNIVERSITY_H
 #define UNIVERSITY_H
 
+#include<map>
 #include<vector>
 #include"Student.h"
 #include"Course.h"
@@ -15,6 +16,8 @@ private:
     vector<Course> courses;
     vector<Faculty> faculty;
     vector<Room> rooms;
+    map<string, vector<string>> courseEnrollments; // courseCode -> list of studentIds
+
 public:
 	//Constructors
     University();
@@ -40,6 +43,9 @@ public:
     bool hasFaculty(const string& id) const;
 
     vector<string> getAllStudentIDs() const;
+
+    void enrollStudentInCourse(const string& studentId, const string& courseCode);
+    vector<string> getStudentsInCourse(const string& courseCode) const;
 
 
 };
