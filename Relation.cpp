@@ -1,106 +1,166 @@
 ﻿#include "Relations.h"
+#include "University.h"
 
-void Relations::printRelation(const vector<pair<string, string>>& R, const string& name)
-{
-    cout << "\nRelation " << name << " = { ";
-    for (auto& p : R)
-        cout << "(" << p.first << ", " << p.second << ") ";
-    cout << "}\n";
+using namespace std;
+
+void Relation::addPair(const string& a, const string& b) {
+    pairs.push_back({ a, b });
 }
 
-bool Relations::isReflexive(const vector<pair<string, string>>& R, const vector<string>& elements)
-{
-    for (auto& x : elements)
-    {
-        bool found = false;
-        for (auto& p : R)
-            if (p.first == x && p.second == x)
-                found = true;
+const vector<pair<string, string>>& Relation::getPairs() const {
+    return pairs;
+}
 
-        if (!found) return false;
+void Relation::print(const string& name) const {
+    cout << name << " = { ";
+    for (size_t i = 0; i < pairs.size(); ++i) {
+        cout << "(" << pairs[i].first << ", " << pairs[i].second << ")";
+        if (i + 1 < pairs.size()) {
+            cout << ", ";
+        }
     }
-    return true;
+    cout << " }\n";
 }
 
-bool Relations::isSymmetric(const vector<pair<string, string>>& R)
-{
-    for (auto& p : R)
-    {
+bool Relation::isReflexive(const vector<string>& universe) const {
+    // For every x in universe, (x, x) must be in pairs
+    for (const string& x : universe) {
         bool found = false;
-        for (auto& q : R)
-            if (q.first == p.second && q.second == p.first)
+        for (const auto& p : pairs) {
+            if (p.first == x && p.second == x) {
                 found = true;
-
-        if (!found) return false;
-    }
-    return true;
-}
-
-bool Relations::isAntisymmetric(const vector<pair<string, string>>& R)
-{
-    for (auto& p : R)
-    {
-        for (auto& q : R)
-        {
-            if (p.first == q.second && p.second == q.first)
-            {
-                if (p.first != p.second)  // xRy AND yRx but x ≠ y
-                    return false;
+                break;
             }
+        }
+        if (!found) {
+            return false;
         }
     }
     return true;
 }
 
-bool Relations::isTransitive(const vector<pair<string, string>>& R)
-{
-    for (auto& p : R)
-    {
-        for (auto& q : R)
-        {
-            if (p.second == q.first)
-            {
-                bool found = false;
-                for (auto& r : R)
-                    if (r.first == p.first && r.second == q.second)
-                    {
-                        found = true;
+bool Relation::isSymmetric() const {
+    // For every (a, b) in R, (b, a) must also be in R
+    for (const auto& p : pairs) {
+        const string& a = p.first;
+        const string& b = p.second;
+
+        bool foundReverse = false;
+        for (const auto& q : pairs) {
+            if (q.first == b && q.second == a) {
+                foundReverse = true;
+                break;
+            }
+        }
+
+        if (!foundReverse) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Relation::isTransitive() const {
+    // For all (a, b) and (b, c) in R, (a, c) must also be in R
+    for (size_t i = 0; i < pairs.size(); ++i) {
+        for (size_t j = 0; j < pairs.size(); ++j) {
+            const string& a = pairs[i].first;
+            const string& b = pairs[i].second;
+            const string& b2 = pairs[j].first;
+            const string& c = pairs[j].second;
+
+            if (b == b2) {
+                bool foundAC = false;
+                for (const auto& r : pairs) {
+                    if (r.first == a && r.second == c) {
+                        foundAC = true;
                         break;
                     }
-                if (!found) return false;
+                }
+                if (!foundAC) {
+                    return false;
+                }
             }
         }
     }
     return true;
 }
 
-bool Relations::isEquivalence(const vector<pair<string, string>>& R, const vector<string>& elements)
-{
-    return isReflexive(R, elements) &&
-        isSymmetric(R) &&
-        isTransitive(R);
+bool Relation::isAntisymmetric() const {
+    // For all (a, b) and (b, a) in R with a != b, relation is not antisymmetric
+    for (const auto& p : pairs) {
+        const string& a = p.first;
+        const string& b = p.second;
+        if (a == b) {
+            continue;
+        }
+        for (const auto& q : pairs) {
+            if (q.first == b && q.second == a) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
-bool Relations::isPartialOrder(const vector<pair<string, string>>& R, const vector<string>& elements)
-{
-    return isReflexive(R, elements) &&
-        isAntisymmetric(R) &&
-        isTransitive(R);
+bool Relation::isEquivalence(const vector<string>& universe) const {
+    return isReflexive(universe) && isSymmetric() && isTransitive();
 }
 
-vector<pair<string, string>> Relations::compose(
-    const vector<pair<string, string>>& R,
-    const vector<pair<string, string>>& S)
-{
-    vector<pair<string, string>> result;
+bool Relation::isPartialOrder(const vector<string>& universe) const {
+    return isReflexive(universe) && isAntisymmetric() && isTransitive();
+}
 
-    for (auto& a : R)
-    {
-        for (auto& b : S)
-        {
-            if (a.second == b.first)
-                result.push_back({ a.first, b.second });
+Relation Relation::compose(const Relation& other) const {
+    Relation result;
+    // this: R(a, b), other: S(b, c)
+    for (const auto& p1 : pairs) {
+        for (const auto& p2 : other.getPairs()) {
+            if (p1.second == p2.first) {
+                result.addPair(p1.first, p2.second); // (a, c)
+            }
         }
     }
     return result;
+}
+
+// ----------------- RelationsModule -----------------
+
+Relation RelationsModule::buildStudentCourseRelation(const University& uni) {
+    Relation r;
+
+    vector<string> courseCodes = uni.getAllCourseCodes();
+
+    for (const string& courseCode : courseCodes) {
+        vector<string> studentsInCourse = uni.getStudentsInCourse(courseCode);
+        for (const string& sid : studentsInCourse) {
+            // Relation: student -> course
+            r.addPair(sid, courseCode);
+        }
+    }
+
+    return r;
+}
+
+void RelationsModule::analyzeStudentCourseRelation(const University& uni) {
+    Relation r = buildStudentCourseRelation(uni);
+
+    cout << "=== Student to Course Relation (R) ===\n";
+    r.print("R(student, course)");
+    cout << "\n";
+
+    // Universe choice: all student IDs (for property checks)
+    vector<string> students = uni.getAllStudentIds();
+
+    cout << "Reflexive on students?     " << (r.isReflexive(students) ? "Yes" : "No") << "\n";
+    cout << "Symmetric?                 " << (r.isSymmetric() ? "Yes" : "No") << "\n";
+    cout << "Transitive?                " << (r.isTransitive() ? "Yes" : "No") << "\n";
+    cout << "Antisymmetric?             " << (r.isAntisymmetric() ? "Yes" : "No") << "\n";
+    cout << "Equivalence relation?      " << (r.isEquivalence(students) ? "Yes" : "No") << "\n";
+    cout << "Partial order on students? " << (r.isPartialOrder(students) ? "Yes" : "No") << "\n\n";
+
+    cout << "Note:\n";
+    cout << "- R is student to course, so it will usually NOT be reflexive on students,\n";
+    cout << "  and not symmetric or equivalence. This is good to explain in viva.\n";
+    cout << "- These checks show how discrete relation properties apply to real data.\n\n";
 }

@@ -1,33 +1,47 @@
 ﻿#ifndef RELATIONS_H
 #define RELATIONS_H
 
-#include <vector>
 #include <string>
-#include <utility>
+#include <vector>
 #include <set>
 #include <iostream>
+
 using namespace std;
 
-class Relations
-{
+// Forward declaration to avoid circular include
+class University;
+
+class Relation {
+private:
+    // Relation R is a set of ordered pairs (a, b)
+    vector<pair<string, string>> pairs;
+
 public:
+    void addPair(const string& a, const string& b);
+    const vector<pair<string, string>>& getPairs() const;
 
-    // Display helper
-    static void printRelation(const vector<pair<string, string>>& R, const string& name);
+    void print(const string& name) const;
 
-    // Check properties
-    static bool isReflexive(const vector<pair<string, string>>& R, const vector<string>& elements);
-    static bool isSymmetric(const vector<pair<string, string>>& R);
-    static bool isAntisymmetric(const vector<pair<string, string>>& R);
-    static bool isTransitive(const vector<pair<string, string>>& R);
+    // Property checks
+    bool isReflexive(const vector<string>& universe) const;
+    bool isSymmetric() const;
+    bool isTransitive() const;
+    bool isAntisymmetric() const;
 
-    // Composite property checks
-    static bool isEquivalence(const vector<pair<string, string>>& R, const vector<string>& elements);
-    static bool isPartialOrder(const vector<pair<string, string>>& R, const vector<string>& elements);
+    bool isEquivalence(const vector<string>& universe) const;
+    bool isPartialOrder(const vector<string>& universe) const;
 
-    // Composition R ∘ S
-    static vector<pair<string, string>> compose(const vector<pair<string, string>>& R,
-        const vector<pair<string, string>>& S);
+    // Composition: this ∘ other
+    Relation compose(const Relation& other) const;
+};
+
+class RelationsModule {
+public:
+    // Build Student -> Course relation from real enrollments
+    static Relation buildStudentCourseRelation(const University& uni);
+
+    // Analyze basic properties of Student -> Course relation
+    static void analyzeStudentCourseRelation(const University& uni);
 };
 
 #endif
