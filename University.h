@@ -19,26 +19,28 @@ private:
     map<string, vector<string>> courseEnrollments; // courseCode -> list of studentIds
 
 public:
-	//Constructors
+    //Constructors
     University();
 
-	//Student Management
+    vector<string> getAllStudentIds() const;
+    vector<string> getAllCourseCodes() const;
+    //Student Management
     void addStudent(const Student& s);
     void listStudents() const;
 
-	//Course Management
+    //Course Management
     void addCourse(const Course& c);
     void listCourses() const;
 
-	//Faculty Management
+    //Faculty Management
     void addFaculty(const Faculty& f);
     void listFaculty() const;
 
-	//Room Management
+    //Room Management
     void addRoom(const Room& r);
     void listRooms() const;
 
-	//Existence Checks
+    //Existence Checks
     bool hasStudent(const string& id) const;
     bool hasFaculty(const string& id) const;
 

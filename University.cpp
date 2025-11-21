@@ -158,3 +158,18 @@ vector<string> University::getAllStudentIDs() const
     return ids;
 }
 
+vector<string> University::getAllStudentIds() const {
+    vector<string> ids;
+    for (const auto& s : students) {
+        ids.push_back(s.getId());   // assumes Student has getId()
+    }
+    return ids;
+}
+
+vector<string> University::getAllCourseCodes() const {
+    vector<string> codes;
+    for (const auto& c : courses) {
+        codes.push_back(c.getCode());   // assumes Course has getCode()
+    }
+    return codes;
+}
