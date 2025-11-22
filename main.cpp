@@ -6,11 +6,41 @@
 #include"PrerequisiteChecker.h"
 #include"SetOperations.h"
 #include "Relations.h"
+#include "InferenceEngine.h"
 using namespace std;
+
+
+void loadFactsFromUniversity(const University& uni,
+    const Scheduler& scheduler,
+    InferenceEngine& engine) {
+    // 1) Faculty → Course
+    vector<pair<string, string>> fcPairs = uni.getFacultyCoursePairs();
+    for (const auto& p : fcPairs) {
+        engine.addFact(p.first + "teaches" + p.second);
+    }
+
+    // 2) Course → Room
+    vector<pair<string, string>> crPairs = uni.getCourseRoomPairs();
+    for (const auto& p : crPairs) {
+        engine.addFact(p.first + "in" + p.second);
+    }
+
+    // 3) Course prerequisites as facts: "Course_requires_Prereq"
+    vector<pair<string, string>> prereqPairs = scheduler.getAllPrerequisitePairs();
+    for (const auto& p : prereqPairs) {
+        const string& course = p.first;
+        const string& prereq = p.second;
+        engine.addFact(course + "requires" + prereq);
+    }
+}
+
+
+
 
 int main() 
 {
     University uni;
+    InferenceEngine logicEngine;
     Scheduler scheduler;
     GroupManager groupManager;
     int choice;
@@ -43,6 +73,9 @@ int main()
         cout << "24) Analyze Faculty Course relation\n";
         cout << "25) Analyze Course Room relation\n";   // ← missing earlier
         cout << "26) Detect indirect student conflicts (relation composition)\n";
+        cout << "27) Add teaching-room policy rule (Logic Engine)\n";
+        cout << "28) Run inference engine on current data\n";
+        cout << "29) Show all logic facts and rules\n";
         cout << "0) Exit\n";
         
         cout << "Choice: ";
@@ -414,6 +447,57 @@ int main()
         case 26:
         {
             RelationsModule::detectIndirectStudentConflicts(uni);
+            break;
+        }
+        case 27:
+        {
+            string facultyId, courseCode, roomId;
+
+            cout << "Enter faculty ID (e.g. ProfX): ";
+            cin >> facultyId;
+
+            cout << "Enter course code (e.g. CS101): ";
+            cin >> courseCode;
+
+            cout << "Enter required room/lab (e.g. LabA): ";
+            cin >> roomId;
+
+            vector<string> conds;
+            // Condition: this faculty teaches this course
+            conds.push_back(facultyId + "teaches" + courseCode);
+
+            // Conclusion: this course must be in this room
+            string conclusion = courseCode + "in" + roomId;
+
+            logicEngine.addRule(conds, conclusion);
+
+            cout << "\nRule added:\n";
+            cout << "IF " << conds[0] << " THEN " << conclusion << "\n\n";
+
+            break;
+        }
+        case 28:
+        {
+            // Load current real-world facts from University
+            loadFactsFromUniversity(uni, scheduler, logicEngine);
+
+            cout << "\n[Logic Engine] Facts loaded from University data.\n";
+            logicEngine.printFacts();
+
+            logicEngine.printRules();
+
+            cout << "[Logic Engine] Running inference...\n";
+            logicEngine.runInference();
+
+            // After inference, check for any rule violations
+            logicEngine.detectConflicts();
+
+            break;
+        }
+        case 29:
+        {
+            logicEngine.printFacts();
+            logicEngine.printRules();
             break;
         }
         case 0:
