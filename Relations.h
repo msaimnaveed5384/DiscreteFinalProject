@@ -42,6 +42,17 @@ public:
 
     // Analyze basic properties of Student -> Course relation
     static void analyzeStudentCourseRelation(const University& uni);
+
+    // New:
+    static Relation buildFacultyCourseRelation(const University& uni);
+    static Relation buildCourseRoomRelation(const University& uni);
+    static Relation buildCourseConflictRelation(const University& uni);
+
+    static void analyzeFacultyCourseRelation(const University& uni);
+    static void analyzeCourseRoomRelation(const University& uni);
+
+    // Dry run: detect indirect conflicts for students
+    static void detectIndirectStudentConflicts(const University& uni);
 };
 
 #endif

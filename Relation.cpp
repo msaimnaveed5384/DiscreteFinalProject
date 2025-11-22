@@ -144,7 +144,7 @@ Relation RelationsModule::buildStudentCourseRelation(const University& uni) {
 
 void RelationsModule::analyzeStudentCourseRelation(const University& uni) {
     Relation r = buildStudentCourseRelation(uni);
-
+   
     cout << "=== Student to Course Relation (R) ===\n";
     r.print("R(student, course)");
     cout << "\n";
@@ -158,9 +158,118 @@ void RelationsModule::analyzeStudentCourseRelation(const University& uni) {
     cout << "Antisymmetric?             " << (r.isAntisymmetric() ? "Yes" : "No") << "\n";
     cout << "Equivalence relation?      " << (r.isEquivalence(students) ? "Yes" : "No") << "\n";
     cout << "Partial order on students? " << (r.isPartialOrder(students) ? "Yes" : "No") << "\n\n";
+}
 
-    cout << "Note:\n";
-    cout << "- R is student to course, so it will usually NOT be reflexive on students,\n";
-    cout << "  and not symmetric or equivalence. This is good to explain in viva.\n";
-    cout << "- These checks show how discrete relation properties apply to real data.\n\n";
+Relation RelationsModule::buildFacultyCourseRelation(const University& uni) {
+    Relation r;
+    vector<pair<string, string>> fcPairs = uni.getFacultyCoursePairs();
+    for (const auto& p : fcPairs) {
+        r.addPair(p.first, p.second); // faculty -> course
+    }
+    return r;
+}
+
+Relation RelationsModule::buildCourseRoomRelation(const University& uni) {
+    Relation r;
+    vector<pair<string, string>> crPairs = uni.getCourseRoomPairs();
+    for (const auto& p : crPairs) {
+        r.addPair(p.first, p.second); // course -> room
+    }
+    return r;
+}
+
+Relation RelationsModule::buildCourseConflictRelation(const University& uni) {
+    Relation r;
+    vector<pair<string, string>> ccPairs = uni.getCourseConflictPairs();
+    for (const auto& p : ccPairs) {
+        r.addPair(p.first, p.second); // course -> conflictingCourse
+    }
+    return r;
+}
+
+void RelationsModule::analyzeFacultyCourseRelation(const University& uni) {
+    Relation r = buildFacultyCourseRelation(uni);
+    cout << "=== Faculty to Course Relation (F) ===\n";
+    r.print("F(faculty, course)");
+    cout << "\n";
+
+    // Build universe of faculty ids from relation pairs
+    vector<pair<string, string>> fcPairs = uni.getFacultyCoursePairs();
+    set<string> facultySet;
+    for (const auto& p : fcPairs) {
+        facultySet.insert(p.first);
+    }
+    vector<string> facultyUniverse(facultySet.begin(), facultySet.end());
+
+    cout << "Reflexive on faculty?      " << (r.isReflexive(facultyUniverse) ? "Yes" : "No") << "\n";
+    cout << "Symmetric?                 " << (r.isSymmetric() ? "Yes" : "No") << "\n";
+    cout << "Transitive?                " << (r.isTransitive() ? "Yes" : "No") << "\n";
+    cout << "Antisymmetric?             " << (r.isAntisymmetric() ? "Yes" : "No") << "\n";
+    cout << "Equivalence relation?      " << (r.isEquivalence(facultyUniverse) ? "Yes" : "No") << "\n";
+    cout << "Partial order on faculty?  " << (r.isPartialOrder(facultyUniverse) ? "Yes" : "No") << "\n\n";
+}
+
+void RelationsModule::analyzeCourseRoomRelation(const University& uni) {
+    Relation r = buildCourseRoomRelation(uni);
+
+    cout << "=== Course to Room Relation (CR) ===\n";
+    r.print("CR(course, room)");
+    cout << "\n";
+
+    // Build universe of course codes from relation pairs
+    vector<pair<string, string>> crPairs = uni.getCourseRoomPairs();
+    set<string> courseSet;
+    for (const auto& p : crPairs) {
+        courseSet.insert(p.first);  // courseCode is the domain
+    }
+    vector<string> courseUniverse(courseSet.begin(), courseSet.end());
+
+    cout << "Reflexive on courses?      "
+        << (r.isReflexive(courseUniverse) ? "Yes" : "No") << "\n";
+
+    cout << "Symmetric?                 "
+        << (r.isSymmetric() ? "Yes" : "No") << "\n";
+
+    cout << "Transitive?                "
+        << (r.isTransitive() ? "Yes" : "No") << "\n";
+
+    cout << "Antisymmetric?             "
+        << (r.isAntisymmetric() ? "Yes" : "No") << "\n";
+
+    cout << "Equivalence relation?      "
+        << (r.isEquivalence(courseUniverse) ? "Yes" : "No") << "\n";
+
+    cout << "Partial order on courses?  "
+        << (r.isPartialOrder(courseUniverse) ? "Yes" : "No") << "\n\n";
+
+}
+
+void RelationsModule::detectIndirectStudentConflicts(const University& uni) {
+    cout << "=== Detecting indirect student course conflicts ===\n";
+
+    // R1: Student -> Course (from enrollments)
+    Relation studentCourse = buildStudentCourseRelation(uni);
+
+    // R2: Course -> ConflictingCourse (from admin input)
+    Relation courseConflict = buildCourseConflictRelation(uni);
+
+    if (courseConflict.getPairs().empty()) {
+        cout << "No course conflicts have been defined yet.\n\n";
+        return;
+    }
+
+    // Composition: Student -> ConflictingCourse
+    Relation studentToConflict = studentCourse.compose(courseConflict);
+
+    if (studentToConflict.getPairs().empty()) {
+        cout << "No indirect conflicts detected for any student.\n\n";
+        return;
+    }
+
+    studentToConflict.print("StudentToConflict(student, conflictingCourse)");
+    cout << "\n";
+
+    cout << "Interpretation:\n";
+    cout << "- Each pair (s, c2) means student s is enrolled in some course c1\n";
+    cout << "  that conflicts with c2. This is detected via relation composition.\n\n";
 }
