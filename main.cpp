@@ -1,10 +1,11 @@
-#include<iostream>
+﻿#include<iostream>
 #include<string>
 #include"University.h"
 #include"Scheduler.h"
 #include"GroupManager.h"
 #include"PrerequisiteChecker.h"
 #include"SetOperations.h"
+#include "Relations.h"
 using namespace std;
 
 int main() 
@@ -35,9 +36,16 @@ int main()
         cout << "17) Enroll a student in a course\n";
         cout << "18) Analyze students across two courses (set operations)\n";
         cout << "19) Generate all possible student groups (power set) for a course\n";
-
-
+        cout << "20) Analyze Student-Course relation properties (Relations Module)\n";
+        cout << "20) Analyze Student Course relation (Relations Module)\n";
+        cout << "21) Assign faculty to a course\n";
+        cout << "22) Assign room to a course\n";
+        cout << "23) Add conflict between two courses\n";
+        cout << "24) Analyze Faculty Course relation\n";
+        cout << "25) Analyze Course Room relation\n";   // ← missing earlier
+        cout << "26) Detect indirect student conflicts (relation composition)\n";
         cout << "0) Exit\n";
+        
         cout << "Choice: ";
         cin >> choice;
         switch (choice)
@@ -353,7 +361,62 @@ int main()
             cout << "\nTotal number of possible groups (2^n) = " << allGroups.size() << "\n\n";
             break;
         }
+        case 20:
+        {
+            RelationsModule::analyzeStudentCourseRelation(uni);
+            break;
+        }
+        case 21:
+        {
+            string facultyId, courseCode;
+            cout << "Enter faculty ID: ";
+            cin >> facultyId;
+            cout << "Enter course code: ";
+            cin >> courseCode;
+            uni.assignFacultyToCourse(facultyId, courseCode);
+            break;
+        }
 
+        case 22:
+        {
+            string courseCode, roomId;
+            cout << "Enter course code: ";
+            cin >> courseCode;
+            cout << "Enter room id or name: ";
+            cin >> roomId;
+            uni.assignRoomToCourse(courseCode, roomId);
+            break;
+        }
+
+        case 23:
+        {
+            string courseA, courseB;
+            cout << "Enter first course code: ";
+            cin >> courseA;
+            cout << "Enter second course code: ";
+            cin >> courseB;
+            uni.addCourseConflict(courseA, courseB);
+            break;
+        }
+
+        case 24:
+        {
+            RelationsModule::analyzeFacultyCourseRelation(uni);
+            break;
+        }
+
+        
+        case 25:
+        {
+            RelationsModule::analyzeCourseRoomRelation(uni);
+            break;
+        }
+
+        case 26:
+        {
+            RelationsModule::detectIndirectStudentConflicts(uni);
+            break;
+        }
         case 0:
             cout << "Exiting...\n";
             break;
