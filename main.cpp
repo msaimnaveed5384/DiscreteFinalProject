@@ -7,6 +7,12 @@
 #include"SetOperations.h"
 #include "Relations.h"
 #include "InferenceEngine.h"
+#include "Functions.h"
+#include "ProofModule.h"
+#include "ConsistencyChecker.h"
+#include "EfficiencyModule.h"
+#include "TestingModule.h"
+
 using namespace std;
 
 
@@ -76,6 +82,19 @@ int main()
         cout << "27) Add teaching-room policy rule (Logic Engine)\n";
         cout << "28) Run inference engine on current data\n";
         cout << "29) Show all logic facts and rules\n";
+        cout << "30. Analyze Course -> Faculty function (Module 7)\n";
+        cout << "31. Analyze Student -> Course function (Module 7)\n";
+        cout << "32. Analyze Faculty -> Room function and composition (Module 7)\n";
+        cout << "33. Prove prerequisite chain for a course (Module 8)\n";
+        cout << "34. Explain logic rules vs facts (Module 8)\n";
+        cout << "35. Verify prerequisite relation consistency (Module 8)\n";
+        cout << "36. Run full consistency check (Module 9)\n";
+        cout << "37. Check course conflict violations only (Module 9)\n";
+        cout << "38. Check missing prerequisites only (Module 9)\n";
+        cout << "39. Check student overload only (Module 9)\n";
+        cout << "40. Benchmark prerequisite DFS (Module 10)\n";
+        cout << "41. Benchmark conflict checking with bitmasks (Module 10)\n";
+        cout << "42. Run full unit tests + benchmarks (Module 12)\n";
         cout << "0) Exit\n";
         
         cout << "Choice: ";
@@ -498,6 +517,103 @@ int main()
         {
             logicEngine.printFacts();
             logicEngine.printRules();
+            break;
+        }
+        case 30:
+        {
+            FunctionsModule::analyzeCourseFacultyFunction(uni);
+            break;
+        }
+
+        case 31:
+        {
+            FunctionsModule::analyzeStudentCourseFunction(uni);
+            break;
+        }
+
+        case 32:
+        {
+            FunctionsModule::analyzeFacultyRoomFunction(uni);
+            break;
+        }
+        case 33:
+        {
+            string target;
+            cout << "Enter target course code: ";
+            cin >> target;
+
+            int n;
+            cout << "How many completed courses to list? ";
+            cin >> n;
+
+            vector<string> completed;
+            for (int i = 0; i < n; i++) {
+                string c;
+                cout << "  Enter completed course " << (i + 1) << ": ";
+                cin >> c;
+                completed.push_back(c);
+            }
+
+            ProofModule::provePrerequisiteChain(scheduler, target, completed);
+            break;
+        }
+
+        case 34:
+        {
+            ProofModule::explainLogicInference(logicEngine);
+            break;
+        }
+
+        case 35:
+        {
+            ProofModule::verifyRelationalConsistency(scheduler);
+            break;
+        }
+        case 36:
+        {
+            int maxCourses;
+            cout << "Enter maximum allowed courses per student: ";
+            cin >> maxCourses;
+
+            ConsistencyChecker::runFullConsistencyCheck(uni, scheduler, maxCourses);
+            break;
+        }
+
+        case 37:
+        {
+            ConsistencyChecker::checkCourseConflicts(uni);
+            break;
+        }
+
+        case 38:
+        {
+            ConsistencyChecker::checkMissingPrerequisites(uni, scheduler);
+            break;
+        }
+
+        case 39:
+        {
+            int maxCourses;
+            cout << "Enter maximum allowed courses per student: ";
+            cin >> maxCourses;
+
+            ConsistencyChecker::checkStudentOverload(uni, maxCourses);
+            break;
+        }
+        case 40:
+        {
+            EfficiencyModule::benchmarkPrerequisiteDFS(scheduler);
+            break;
+        }
+
+        case 41:
+        {
+            EfficiencyModule::benchmarkConflictBitmask(uni);
+            break;
+        }
+        case 42:
+        {
+            TestingModule::runUnitTests(uni, scheduler);
             break;
         }
         case 0:

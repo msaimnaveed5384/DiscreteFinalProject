@@ -47,6 +47,9 @@ public:
 
     // Print all facts
     void printFacts() const;
+
+    const vector<string>& getFacts() const;
+    const vector<LogicRule>& getRules() const;
 };
 
 #endif

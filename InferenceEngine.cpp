@@ -128,3 +128,11 @@ void InferenceEngine::printFacts() const {
 
     cout << "===============================\n\n";
 }
+
+const vector<string>& InferenceEngine::getFacts() const {
+    return facts;
+}
+
+const vector<LogicRule>& InferenceEngine::getRules() const {
+    return rules;
+}
