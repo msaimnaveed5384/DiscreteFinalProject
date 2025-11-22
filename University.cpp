@@ -213,3 +213,11 @@ vector<pair<string, string>> University::getCourseRoomPairs() const {
 vector<pair<string, string>> University::getCourseConflictPairs() const {
     return courseConflicts;
 }
+
+vector<string> University::getAllFacultyIds() const {
+    vector<string> ids;
+    for (const auto& f : faculty) {
+        ids.push_back(f.getFacultyID());   // or getName() if that’s what you use as key
+    }
+    return ids;
+}

@@ -60,5 +60,7 @@ public:
     vector<pair<string, string>> getFacultyCoursePairs() const;
     vector<pair<string, string>> getCourseRoomPairs() const;
     vector<pair<string, string>> getCourseConflictPairs() const;
+
+    vector<string> getAllFacultyIds() const;
 };
 #endif
