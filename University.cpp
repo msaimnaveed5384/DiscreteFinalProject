@@ -173,3 +173,43 @@ vector<string> University::getAllCourseCodes() const {
     }
     return codes;
 }
+
+void University::assignFacultyToCourse(const string& facultyId, const string& courseCode) {
+    facultyCourses[facultyId].push_back(courseCode);
+    cout << "Faculty " << facultyId << " assigned to course " << courseCode << " successfully.\n";
+}
+
+void University::assignRoomToCourse(const string& courseCode, const string& roomId) {
+    courseRooms[courseCode] = roomId;
+    cout << "Room " << roomId << " assigned to course " << courseCode << " successfully.\n";
+}
+
+void University::addCourseConflict(const string& courseA, const string& courseB) {
+    courseConflicts.push_back({ courseA, courseB });
+    courseConflicts.push_back({ courseB, courseA }); // conflict is symmetric
+    cout << "Conflict added between courses " << courseA << " and " << courseB << ".\n";
+}
+
+vector<pair<string, string>> University::getFacultyCoursePairs() const {
+    vector<pair<string, string>> result;
+    for (const auto& entry : facultyCourses) {
+        const string& fid = entry.first;
+        const vector<string>& coursesVec = entry.second;
+        for (const string& c : coursesVec) {
+            result.push_back({ fid, c });
+        }
+    }
+    return result;
+}
+
+vector<pair<string, string>> University::getCourseRoomPairs() const {
+    vector<pair<string, string>> result;
+    for (const auto& entry : courseRooms) {
+        result.push_back({ entry.first, entry.second });
+    }
+    return result;
+}
+
+vector<pair<string, string>> University::getCourseConflictPairs() const {
+    return courseConflicts;
+}

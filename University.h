@@ -16,8 +16,11 @@ private:
     vector<Course> courses;
     vector<Faculty> faculty;
     vector<Room> rooms;
-    map<string, vector<string>> courseEnrollments; // courseCode -> list of studentIds
 
+    map<string, vector<string>> courseEnrollments; // courseCode -> list of studentIds
+    map<string, vector<string>> facultyCourses;      // facultyId -> list of courseCodes
+    map<string, string> courseRooms;        // courseCode -> roomId
+    vector<pair<string, string>> courseConflicts;    // (courseA, courseB) pairs
 public:
     //Constructors
     University();
@@ -49,6 +52,13 @@ public:
     void enrollStudentInCourse(const string& studentId, const string& courseCode);
     vector<string> getStudentsInCourse(const string& courseCode) const;
 
+    // Module 6 relation helpers
+    void assignFacultyToCourse(const string& facultyId, const string& courseCode);
+    void assignRoomToCourse(const string& courseCode, const string& roomId);
+    void addCourseConflict(const string& courseA, const string& courseB);
 
+    vector<pair<string, string>> getFacultyCoursePairs() const;
+    vector<pair<string, string>> getCourseRoomPairs() const;
+    vector<pair<string, string>> getCourseConflictPairs() const;
 };
 #endif
