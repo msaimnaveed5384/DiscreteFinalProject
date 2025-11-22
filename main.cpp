@@ -37,7 +37,6 @@ int main()
         cout << "18) Analyze students across two courses (set operations)\n";
         cout << "19) Generate all possible student groups (power set) for a course\n";
         cout << "20) Analyze Student-Course relation properties (Relations Module)\n";
-        cout << "20) Analyze Student Course relation (Relations Module)\n";
         cout << "21) Assign faculty to a course\n";
         cout << "22) Assign room to a course\n";
         cout << "23) Add conflict between two courses\n";
