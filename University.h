@@ -46,6 +46,8 @@ public:
     //Existence Checks
     bool hasStudent(const string& id) const;
     bool hasFaculty(const string& id) const;
+    bool hasCourse(const string& id) const;
+    bool hasRoom(const string& id) const;
 
     vector<string> getAllStudentIDs() const;
 

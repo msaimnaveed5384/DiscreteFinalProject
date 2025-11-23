@@ -59,8 +59,11 @@ void University::listCourses() const
 void University::enrollStudentInCourse(const string& studentId, const string& courseCode) 
 {
     // Optional: later you can check if studentId and courseCode actually exist.
-    // For now we just record the relationship.
-
+    
+    if (!(hasStudent(studentId) && hasCourse(courseCode)) ) {
+        cout << "Student Or Course Not Found!\n";
+        return;
+    }
     courseEnrollments[courseCode].push_back(studentId);
 
     cout << "Student " << studentId << " enrolled in course " << courseCode << " successfully.\n";
@@ -148,6 +151,15 @@ bool University::hasFaculty(const string& id) const
     return false;
 }
 
+bool University::hasCourse(const string& id) const{
+    for (const Course& c : courses) {
+        if (c.getCode() == id) {
+            return true;
+        }
+    }
+    return false;
+}
+
 vector<string> University::getAllStudentIDs() const 
 {
     vector<string> ids;
@@ -161,7 +173,7 @@ vector<string> University::getAllStudentIDs() const
 vector<string> University::getAllStudentIds() const {
     vector<string> ids;
     for (const auto& s : students) {
-        ids.push_back(s.getId());   // assumes Student has getId()
+        ids.push_back(s.getId());   
     }
     return ids;
 }
@@ -169,24 +181,43 @@ vector<string> University::getAllStudentIds() const {
 vector<string> University::getAllCourseCodes() const {
     vector<string> codes;
     for (const auto& c : courses) {
-        codes.push_back(c.getCode());   // assumes Course has getCode()
+        codes.push_back(c.getCode());
     }
     return codes;
 }
 
 void University::assignFacultyToCourse(const string& facultyId, const string& courseCode) {
+    if (!(hasFaculty(facultyId) && hasCourse(courseCode))) {
+        cout << "Faculty Or course Not Found!\n";
+        return;
+    }
     facultyCourses[facultyId].push_back(courseCode);
     cout << "Faculty " << facultyId << " assigned to course " << courseCode << " successfully.\n";
 }
-
+bool University::hasRoom(const string& id) const {
+    for (const Room& r : rooms) {
+        if (r.getRoomNumber() == id) {
+            return true;
+        }
+    }
+    return false;
+}
 void University::assignRoomToCourse(const string& courseCode, const string& roomId) {
+    if ((hasRoom(roomId) && hasCourse(courseCode))) {
+        cout << "Room or Course Not Found!" << endl;
+        return;
+    }
     courseRooms[courseCode] = roomId;
     cout << "Room " << roomId << " assigned to course " << courseCode << " successfully.\n";
 }
 
 void University::addCourseConflict(const string& courseA, const string& courseB) {
+    if (!(hasCourse(courseA) && hasCourse(courseB))) {
+        cout << "Course Not Found!" << endl;
+        return;
+    }
     courseConflicts.push_back({ courseA, courseB });
-    courseConflicts.push_back({ courseB, courseA }); // conflict is symmetric
+    courseConflicts.push_back({ courseB, courseA }); 
     cout << "Conflict added between courses " << courseA << " and " << courseB << ".\n";
 }
 
