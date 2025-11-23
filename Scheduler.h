@@ -14,6 +14,7 @@ private:
     void topoSortUtil(const string& course,map<string, bool>& visited,vector<string>& order) const;
 public:
     Scheduler();
+    vector<pair<string, string>> getAllPrerequisitePairs() const;
     void addCourse(const string& code);
     void addPrerequisite(const string& course, const string& prereq);
     bool canTakeCourse(const vector<string>& completed,const string& course) const;

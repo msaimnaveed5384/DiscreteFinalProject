@@ -1,15 +1,52 @@
-#include<iostream>
+﻿#include<iostream>
 #include<string>
 #include"University.h"
 #include"Scheduler.h"
 #include"GroupManager.h"
 #include"PrerequisiteChecker.h"
 #include"SetOperations.h"
+#include "Relations.h"
+#include "InferenceEngine.h"
+#include "Functions.h"
+#include "ProofModule.h"
+#include "ConsistencyChecker.h"
+#include "EfficiencyModule.h"
+#include "TestingModule.h"
+
 using namespace std;
+
+
+void loadFactsFromUniversity(const University& uni,
+    const Scheduler& scheduler,
+    InferenceEngine& engine) {
+    // 1) Faculty -> Course
+    vector<pair<string, string>> fcPairs = uni.getFacultyCoursePairs();
+    for (const auto& p : fcPairs) {
+        engine.addFact(p.first + "teaches" + p.second);
+    }
+
+    // 2) Course -> Room
+    vector<pair<string, string>> crPairs = uni.getCourseRoomPairs();
+    for (const auto& p : crPairs) {
+        engine.addFact(p.first + "in" + p.second);
+    }
+
+    // 3) Course prerequisites as facts: "Course_requires_Prereq"
+    vector<pair<string, string>> prereqPairs = scheduler.getAllPrerequisitePairs();
+    for (const auto& p : prereqPairs) {
+        const string& course = p.first;
+        const string& prereq = p.second;
+        engine.addFact(course + "requires" + prereq);
+    }
+}
+
+
+
 
 int main() 
 {
     University uni;
+    InferenceEngine logicEngine;
     Scheduler scheduler;
     GroupManager groupManager;
     int choice;
@@ -35,9 +72,31 @@ int main()
         cout << "17) Enroll a student in a course\n";
         cout << "18) Analyze students across two courses (set operations)\n";
         cout << "19) Generate all possible student groups (power set) for a course\n";
-
-
+        cout << "20) Analyze Student-Course relation properties (Relations Module)\n";
+        cout << "21) Assign faculty to a course\n";
+        cout << "22) Assign room to a course\n";
+        cout << "23) Add conflict between two courses\n";
+        cout << "24) Analyze Faculty Course relation\n";
+        cout << "25) Analyze Course Room relation\n"; 
+        cout << "26) Detect indirect student conflicts (relation composition)\n";
+        cout << "27) Add teaching-room policy rule (Logic Engine)\n";
+        cout << "28) Run inference engine on current data\n";
+        cout << "29) Show all logic facts and rules\n";
+        cout << "30. Analyze Course -> Faculty function (Module 7)\n";
+        cout << "31. Analyze Student -> Course function (Module 7)\n";
+        cout << "32. Analyze Faculty -> Room function and composition (Module 7)\n";
+        cout << "33. Prove prerequisite chain for a course (Module 8)\n";
+        cout << "34. Explain logic rules vs facts (Module 8)\n";
+        cout << "35. Verify prerequisite relation consistency (Module 8)\n";
+        cout << "36. Run full consistency check (Module 9)\n";
+        cout << "37. Check course conflict violations only (Module 9)\n";
+        cout << "38. Check missing prerequisites only (Module 9)\n";
+        cout << "39. Check student overload only (Module 9)\n";
+        cout << "40. Benchmark prerequisite DFS (Module 10)\n";
+        cout << "41. Benchmark conflict checking with bitmasks (Module 10)\n";
+        cout << "42. Run full unit tests + benchmarks (Module 12)\n";
         cout << "0) Exit\n";
+        
         cout << "Choice: ";
         cin >> choice;
         switch (choice)
@@ -86,7 +145,6 @@ int main()
             Course c(code, title, ch);
             uni.addCourse(c);
 
-            // Keep schedulers course list in sync with university
             scheduler.addCourse(code);
 
             cout << "Course added successfully\n";
@@ -158,11 +216,16 @@ int main()
 
             cout << "Enter course code: ";
             cin >> courseCode;
-
+            if (!uni.hasCourse(courseCode)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             cout << "Enter prerequisite course code: ";
             cin >> prereqCode;
-
-            //We assume both courses we already added via option 3
+            if (!uni.hasCourse(prereqCode)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             scheduler.addPrerequisite(courseCode, prereqCode);
 
             cout << "Prerequisite added successfully.\n";
@@ -239,11 +302,18 @@ int main()
         case 16:
         {
             string baseCourse, targetCourse;
-            cout << "Enter base course code (e.g., IntroCS): ";
+            cout << "Enter base course code : ";
             cin >> baseCourse;
-            cout << "Enter target (advanced) course code (e.g., AdvCS): ";
+            if (!uni.hasCourse(baseCourse)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
+            cout << "Enter target (advanced) course code : ";
             cin >> targetCourse;
-
+            if (!uni.hasCourse(targetCourse)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             map<string, vector<string>> prereqMap = scheduler.getPrerequisiteMap();
             if (prereqMap.empty()) 
             {
@@ -262,10 +332,16 @@ int main()
 
             cout << "Enter student ID: ";
             cin >> studentId;
-
+            if (!uni.hasStudent(studentId)) {
+                cout << "Student Not Found\n";
+                break;
+            }
             cout << "Enter course code: ";
             cin >> courseCode;
-
+            if (!uni.hasCourse(courseCode)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             uni.enrollStudentInCourse(studentId, courseCode);
             break;
         }
@@ -276,7 +352,11 @@ int main()
 
             cout << "Enter first course code (e.g. CS101): ";
             cin >> courseA;
-
+            if (!uni.hasCourse(courseA)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
+            
             cout << "Enter second course code (e.g. MATH101): ";
             cin >> courseB;
 
@@ -290,7 +370,7 @@ int main()
             cout << "Students in " << courseB << ":\n";
             SetOperations::printSet(studentsB, "S(" + courseB + ")");
 
-            // Now apply proper set operations
+            // apply proper set operations
             vector<string> both = SetOperations::setIntersection(studentsA, studentsB);
             vector<string> either = SetOperations::setUnion(studentsA, studentsB);
             vector<string> onlyA = SetOperations::setDifference(studentsA, studentsB);
@@ -353,7 +433,210 @@ int main()
             cout << "\nTotal number of possible groups (2^n) = " << allGroups.size() << "\n\n";
             break;
         }
+        case 20:
+        {
+            RelationsModule::analyzeStudentCourseRelation(uni);
+            break;
+        }
+        case 21:
+        {
+            string facultyId, courseCode;
+            cout << "Enter faculty ID: ";
+            cin >> facultyId;
+            cout << "Enter course code: ";
+            cin >> courseCode;
+            uni.assignFacultyToCourse(facultyId, courseCode);
+            break;
+        }
 
+        case 22:
+        {
+            string courseCode, roomId;
+            cout << "Enter course code: ";
+            cin >> courseCode;
+            cout << "Enter room id or name: ";
+            cin >> roomId;
+            uni.assignRoomToCourse(courseCode, roomId);
+            break;
+        }
+
+        case 23:
+        {
+            string courseA, courseB;
+            cout << "Enter first course code: ";
+            cin >> courseA;
+            cout << "Enter second course code: ";
+            cin >> courseB;
+            uni.addCourseConflict(courseA, courseB);
+            break;
+        }
+
+        case 24:
+        {
+            RelationsModule::analyzeFacultyCourseRelation(uni);
+            break;
+        }
+
+        
+        case 25:
+        {
+            RelationsModule::analyzeCourseRoomRelation(uni);
+            break;
+        }
+
+        case 26:
+        {
+            RelationsModule::detectIndirectStudentConflicts(uni);
+            break;
+        }
+        case 27:
+        {
+            string facultyId, courseCode, roomId;
+
+            cout << "Enter faculty ID (e.g. ProfX): ";
+            cin >> facultyId;
+
+            cout << "Enter course code (e.g. CS101): ";
+            cin >> courseCode;
+
+            cout << "Enter required room/lab (e.g. LabA): ";
+            cin >> roomId;
+
+            vector<string> conds;
+            // Condition: this faculty teaches this course
+            conds.push_back(facultyId + " teaches " + courseCode);
+
+            // Conclusion: this course must be in this room
+            string conclusion = courseCode + " in " + roomId;
+
+            logicEngine.addRule(conds, conclusion);
+
+            cout << "\nRule added:\n";
+            cout << "IF " << conds[0] << " THEN " << conclusion << "\n\n";
+
+            break;
+        }
+        case 28:
+        {
+            // Load current real-world facts from University
+            loadFactsFromUniversity(uni, scheduler, logicEngine);
+
+            cout << "\n[Logic Engine] Facts loaded from University data.\n";
+            logicEngine.printFacts();
+
+            logicEngine.printRules();
+
+            cout << "[Logic Engine] Running inference...\n";
+            logicEngine.runInference();
+
+            // After inference, check for any rule violations
+            logicEngine.detectConflicts();
+
+            break;
+        }
+        case 29:
+        {
+            logicEngine.printFacts();
+            logicEngine.printRules();
+            break;
+        }
+        case 30:
+        {
+            FunctionsModule::analyzeCourseFacultyFunction(uni);
+            break;
+        }
+
+        case 31:
+        {
+            FunctionsModule::analyzeStudentCourseFunction(uni);
+            break;
+        }
+
+        case 32:
+        {
+            FunctionsModule::analyzeFacultyRoomFunction(uni);
+            break;
+        }
+        case 33:
+        {
+            string target;
+            cout << "Enter target course code: ";
+            cin >> target;
+
+            int n;
+            cout << "How many completed courses to list? ";
+            cin >> n;
+
+            vector<string> completed;
+            for (int i = 0; i < n; i++) {
+                string c;
+                cout << "  Enter completed course " << (i + 1) << ": ";
+                cin >> c;
+                completed.push_back(c);
+            }
+
+            ProofModule::provePrerequisiteChain(scheduler, target, completed);
+            break;
+        }
+
+        case 34:
+        {
+            ProofModule::explainLogicInference(logicEngine);
+            break;
+        }
+
+        case 35:
+        {
+            ProofModule::verifyRelationalConsistency(scheduler);
+            break;
+        }
+        case 36:
+        {
+            int maxCourses;
+            cout << "Enter maximum allowed courses per student: ";
+            cin >> maxCourses;
+
+            ConsistencyChecker::runFullConsistencyCheck(uni, scheduler, maxCourses);
+            break;
+        }
+
+        case 37:
+        {
+            ConsistencyChecker::checkCourseConflicts(uni);
+            break;
+        }
+
+        case 38:
+        {
+            ConsistencyChecker::checkMissingPrerequisites(uni, scheduler);
+            break;
+        }
+
+        case 39:
+        {
+            int maxCourses;
+            cout << "Enter maximum allowed courses per student: ";
+            cin >> maxCourses;
+
+            ConsistencyChecker::checkStudentOverload(uni, maxCourses);
+            break;
+        }
+        case 40:
+        {
+            EfficiencyModule::benchmarkPrerequisiteDFS(scheduler);
+            break;
+        }
+
+        case 41:
+        {
+            EfficiencyModule::benchmarkConflictBitmask(uni);
+            break;
+        }
+        case 42:
+        {
+            TestingModule::runUnitTests(uni, scheduler);
+            break;
+        }
         case 0:
             cout << "Exiting...\n";
             break;

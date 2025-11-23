@@ -175,3 +175,16 @@ map<string, vector<string>> Scheduler::getPrerequisiteMap() const
 {
     return prerequisites;
 }
+
+
+vector<pair<string, string>> Scheduler::getAllPrerequisitePairs() const {
+    vector<pair<string, string>> result;
+    for (const auto& entry : prerequisites) {
+        const string& course = entry.first;
+        const vector<string>& prereqs = entry.second;
+        for (const string& p : prereqs) {
+            result.push_back({ course, p }); 
+        }
+    }
+    return result;
+}

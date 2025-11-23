@@ -119,26 +119,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConsistencyChecker.cpp" />
     <ClCompile Include="Course.cpp" />
+    <ClCompile Include="EfficiencyModule.cpp" />
     <ClCompile Include="Faculty.cpp" />
+    <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GroupManager.cpp" />
+    <ClCompile Include="InferenceEngine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PrerequisiteChecker.cpp" />
+    <ClCompile Include="ProofModule.cpp" />
+    <ClCompile Include="Relation.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="SetOperations.cpp" />
     <ClCompile Include="Student.cpp" />
+    <ClCompile Include="TestingModule.cpp" />
     <ClCompile Include="University.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConsistencyChecker.h" />
     <ClInclude Include="Course.h" />
+    <ClInclude Include="EfficiencyModule.h" />
     <ClInclude Include="Faculty.h" />
+    <ClInclude Include="Functions.h" />
     <ClInclude Include="GroupManager.h" />
+    <ClInclude Include="InferenceEngine.h" />
     <ClInclude Include="PrerequisiteChecker.h" />
+    <ClInclude Include="ProofModule.h" />
+    <ClInclude Include="Relations.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="SetOperations.h" />
     <ClInclude Include="Student.h" />
+    <ClInclude Include="TestingModule.h" />
     <ClInclude Include="University.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
