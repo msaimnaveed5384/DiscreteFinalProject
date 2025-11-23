@@ -19,13 +19,13 @@ using namespace std;
 void loadFactsFromUniversity(const University& uni,
     const Scheduler& scheduler,
     InferenceEngine& engine) {
-    // 1) Faculty → Course
+    // 1) Faculty -> Course
     vector<pair<string, string>> fcPairs = uni.getFacultyCoursePairs();
     for (const auto& p : fcPairs) {
         engine.addFact(p.first + "teaches" + p.second);
     }
 
-    // 2) Course → Room
+    // 2) Course -> Room
     vector<pair<string, string>> crPairs = uni.getCourseRoomPairs();
     for (const auto& p : crPairs) {
         engine.addFact(p.first + "in" + p.second);
@@ -77,7 +77,7 @@ int main()
         cout << "22) Assign room to a course\n";
         cout << "23) Add conflict between two courses\n";
         cout << "24) Analyze Faculty Course relation\n";
-        cout << "25) Analyze Course Room relation\n";   // ← missing earlier
+        cout << "25) Analyze Course Room relation\n"; 
         cout << "26) Detect indirect student conflicts (relation composition)\n";
         cout << "27) Add teaching-room policy rule (Logic Engine)\n";
         cout << "28) Run inference engine on current data\n";
@@ -145,7 +145,6 @@ int main()
             Course c(code, title, ch);
             uni.addCourse(c);
 
-            // Keep schedulers course list in sync with university
             scheduler.addCourse(code);
 
             cout << "Course added successfully\n";
@@ -217,11 +216,16 @@ int main()
 
             cout << "Enter course code: ";
             cin >> courseCode;
-
+            if (!uni.hasCourse(courseCode)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             cout << "Enter prerequisite course code: ";
             cin >> prereqCode;
-
-            //We assume both courses we already added via option 3
+            if (!uni.hasCourse(prereqCode)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             scheduler.addPrerequisite(courseCode, prereqCode);
 
             cout << "Prerequisite added successfully.\n";
@@ -298,11 +302,18 @@ int main()
         case 16:
         {
             string baseCourse, targetCourse;
-            cout << "Enter base course code (e.g., IntroCS): ";
+            cout << "Enter base course code : ";
             cin >> baseCourse;
-            cout << "Enter target (advanced) course code (e.g., AdvCS): ";
+            if (!uni.hasCourse(baseCourse)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
+            cout << "Enter target (advanced) course code : ";
             cin >> targetCourse;
-
+            if (!uni.hasCourse(targetCourse)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             map<string, vector<string>> prereqMap = scheduler.getPrerequisiteMap();
             if (prereqMap.empty()) 
             {
@@ -321,10 +332,16 @@ int main()
 
             cout << "Enter student ID: ";
             cin >> studentId;
-
+            if (!uni.hasStudent(studentId)) {
+                cout << "Student Not Found\n";
+                break;
+            }
             cout << "Enter course code: ";
             cin >> courseCode;
-
+            if (!uni.hasCourse(courseCode)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
             uni.enrollStudentInCourse(studentId, courseCode);
             break;
         }
@@ -335,7 +352,11 @@ int main()
 
             cout << "Enter first course code (e.g. CS101): ";
             cin >> courseA;
-
+            if (!uni.hasCourse(courseA)) {
+                cout << "Course Not Found!\n";
+                break;
+            }
+            
             cout << "Enter second course code (e.g. MATH101): ";
             cin >> courseB;
 
@@ -349,7 +370,7 @@ int main()
             cout << "Students in " << courseB << ":\n";
             SetOperations::printSet(studentsB, "S(" + courseB + ")");
 
-            // Now apply proper set operations
+            // apply proper set operations
             vector<string> both = SetOperations::setIntersection(studentsA, studentsB);
             vector<string> either = SetOperations::setUnion(studentsA, studentsB);
             vector<string> onlyA = SetOperations::setDifference(studentsA, studentsB);
@@ -483,10 +504,10 @@ int main()
 
             vector<string> conds;
             // Condition: this faculty teaches this course
-            conds.push_back(facultyId + "teaches" + courseCode);
+            conds.push_back(facultyId + " teaches " + courseCode);
 
             // Conclusion: this course must be in this room
-            string conclusion = courseCode + "in" + roomId;
+            string conclusion = courseCode + " in " + roomId;
 
             logicEngine.addRule(conds, conclusion);
 
